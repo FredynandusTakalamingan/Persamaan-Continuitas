@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Persamaan Kontinuitas - Fluida Dinamis</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: rgba(255,255,255,0.08);
+      --card-strong: rgba(255,255,255,0.12);
+      --text: #e2e8f0;
+      --muted: #cbd5e1;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --warning: #f59e0b;
+      --danger: #fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,0.25), transparent 25%),
+        radial-gradient(circle at top left, rgba(34,197,94,0.18), transparent 20%),
+        linear-gradient(160deg, #020617, #0f172a 45%, #111827);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 64px 20px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.03));
+      pointer-events: none;
+    }
+
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      padding: 40px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.18);
+      color: #bae6fd;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      border: 1px solid rgba(56,189,248,0.35);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      max-width: 800px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(2,6,23,0.75);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      transition: 0.25s ease;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover { background: rgba(56,189,248,0.2); transform: translateY(-1px); }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 70px;
+    }
+
+    section {
+      margin: 28px 0;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.9rem;
+      color: #f8fafc;
+    }
+
+    h3 {
+      color: #e0f2fe;
+      margin-top: 24px;
+    }
+
+    p, li {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card-strong);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .formula-box {
+      background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(34,197,94,0.12));
+      border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 18px 0;
+      overflow-x: auto;
+    }
+
+    .formula {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      text-align: center;
+      color: #f8fafc;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .mini-note {
+      font-size: 0.95rem;
+      color: #bfdbfe;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .pipe-wrap {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-radius: 22px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .controls label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: bold;
+      color: #e2e8f0;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+      accent-color: var(--accent);
+    }
+
+    .readout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .readout .value {
+      background: rgba(255,255,255,0.06);
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .big {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #f8fafc;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .caption {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-top: 12px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    .gallery-item {
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .gallery-item svg {
+      height: 210px;
+      background: linear-gradient(160deg, rgba(56,189,248,0.08), rgba(255,255,255,0.03));
+    }
+
+    .gallery-item .text {
+      padding: 16px;
+    }
+
+    .applications .card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .applications .card::before {
+      content: "";
+      position: absolute;
+      inset: auto -10% 70% auto;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(56,189,248,0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .quiz-box {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--accent), #0ea5e9);
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 12px 18px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(14,165,233,0.3);
+      transition: 0.2s ease;
+      margin-top: 10px;
+    }
+
+    button:hover { transform: translateY(-2px) scale(1.01); }
+
+    .answer {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(34,197,94,0.12);
+      color: #dcfce7;
+      border: 1px solid rgba(34,197,94,0.22);
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      color: #94a3b8;
+      padding: 20px 16px 50px;
+    }
+
+    .highlight {
+      color: #fef08a;
+      font-weight: bold;
+    }
+
+    .small {
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 900px) {
+      .sim-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="badge">Fisika • Fluida Dinamis • Interaktif</div>
+      <h1>Persamaan Kontinuitas</h1>
+      <p class="subtitle">
+        Media pembelajaran interaktif tentang <strong>persamaan kontinuitas pada fluida dinamis</strong>,
+        lengkap dengan materi inti, rumus, simulasi aliran fluida, penerapan dalam kehidupan sehari-hari,
+        ilustrasi tambahan, dan latihan pemahaman.
+      </p>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-wrap">
+      <a href="#pengertian">Pengertian</a>
+      <a href="#rumus">Rumus</a>
+      <a href="#simulasi">Simulasi</a>
+      <a href="#penerapan">Penerapan</a>
+      <a href="#gambar">Gambar Tambahan</a>
+      <a href="#latihan">Latihan</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="pengertian">
+      <h2>1. Pengertian Persamaan Kontinuitas</h2>
+      <p>
+        Dalam <strong>fluida dinamis</strong>, persamaan kontinuitas menjelaskan bahwa <span class="highlight">debit aliran fluida tetap</span>
+        pada setiap penampang pipa, selama fluida mengalir secara tunak dan tidak ada kebocoran.
+      </p>
+      <p>
+        Artinya, jika luas penampang pipa mengecil, maka kecepatan aliran fluida harus membesar agar jumlah fluida
+        yang lewat setiap detik tetap sama.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Konsep utama</h3>
+          <ul>
+            <li>Fluida dianggap <strong>ideal</strong> atau mendekati ideal.</li>
+            <li>Aliran bersifat <strong>tunak</strong> (steady flow).</li>
+            <li>Tidak ada fluida yang hilang atau bocor.</li>
+            <li>Massa fluida yang masuk = massa fluida yang keluar.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Makna fisik</h3>
+          <p>
+            Saat air mengalir dari pipa besar ke pipa sempit, air terlihat mengalir lebih cepat pada bagian sempit.
+            Hal ini terjadi karena fluida harus mempertahankan laju aliran yang sama.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Besaran yang digunakan</h3>
+          <ul>
+            <li><strong>A</strong> = luas penampang (m²)</li>
+            <li><strong>v</strong> = kecepatan aliran (m/s)</li>
+            <li><strong>Q</strong> = debit (m³/s)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="rumus">
+      <h2>2. Rumus Persamaan Kontinuitas</h2>
+      <div class="formula-box">
+        <div class="formula">A<sub>1</sub>v<sub>1</sub> = A<sub>2</sub>v<sub>2</sub></div>
+        <div class="mini-note">Untuk fluida tak termampatkan, debit di setiap penampang tetap.</div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Makna rumus</h3>
+          <p>
+            Hasil kali antara luas penampang dan kecepatan aliran di titik pertama harus sama dengan hasil kali
+            luas penampang dan kecepatan aliran di titik kedua.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Akibat penting</h3>
+          <p>
+            Jika <strong>luas penampang mengecil</strong>, maka <strong>kecepatan membesar</strong>.
+            Jika <strong>luas penampang membesar</strong>, maka <strong>kecepatan mengecil</strong>.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Debit fluida</h3>
+          <div class="formula-box" style="margin-top:10px;">
+            <div class="formula">Q = A \, v</div>
+          </div>
+          <p class="small">Debit adalah volume fluida yang mengalir tiap satuan waktu.</p>
+        </div>
+      </div>
+
+      <h3>Contoh singkat</h3>
+      <p>
+        Sebuah pipa memiliki luas penampang awal 8 cm² dan kecepatan air 2 m/s. Jika luas penampang bagian sempitnya 4 cm²,
+        maka kecepatan air pada bagian sempit adalah:
+      </p>
+      <div class="formula-box">
+        <div class="formula">A<sub>1</sub>v<sub>1</sub> = A<sub>2</sub>v<sub>2</sub></div>
+        <div class="mini-note">8 × 2 = 4 × v<sub>2</sub> → v<sub>2</sub> = 4 m/s</div>
+      </div>
+      <p>
+        Jadi, kecepatan aliran menjadi <strong>lebih besar</strong> ketika pipa menyempit.
+      </p>
+    </section>
+
+    <section id="simulasi">
+      <h2>3. Simulasi Interaktif Aliran Fluida</h2>
+      <p>
+        Geser nilai <strong>luas penampang 1</strong>, <strong>luas penampang 2</strong>, dan <strong>kecepatan awal</strong>.
+        Simulasi akan memperlihatkan bagaimana perubahan penampang memengaruhi kecepatan aliran berdasarkan persamaan kontinuitas.
+      </p>
+
+      <div class="pipe-wrap">
+        <div class="sim-grid">
+          <div class="controls card">
+            <label>
+              Luas Penampang 1 (A₁) = <span id="a1Label">8</span> cm²
+              <input id="a1" type="range" min="2" max="20" step="1" value="8">
+            </label>
+
+            <label>
+              Luas Penampang 2 (A₂) = <span id="a2Label">4</span> cm²
+              <input id="a2" type="range" min="1" max="20" step="1" value="4">
+            </label>
+
+            <label>
+              Kecepatan Awal (v₁) = <span id="v1Label">2</span> m/s
+              <input id="v1" type="range" min="1" max="10" step="0.5" value="2">
+            </label>
+
+            <div class="readout">
+              <div class="value">
+                <div>Kecepatan v₂</div>
+                <div class="big" id="v2Out">4.00 m/s</div>
+              </div>
+              <div class="value">
+                <div>Debit Q</div>
+                <div class="big" id="qOut">16.00</div>
+                <div class="small">(cm²·m/s)</div>
+              </div>
+              <div class="value">
+                <div>Kondisi</div>
+                <div class="big" id="conditionOut">Lebih cepat</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <svg viewBox="0 0 900 380" aria-label="Simulasi aliran fluida pada pipa">
+              <defs>
+                <linearGradient id="pipeGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#1e293b"/>
+                  <stop offset="100%" stop-color="#334155"/>
+                </linearGradient>
+                <linearGradient id="waterGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#38bdf8"/>
+                  <stop offset="100%" stop-color="#0ea5e9"/>
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                  <path d="M0,0 L12,6 L0,12 z" fill="#fde68a"></path>
+                </marker>
+              </defs>
+
+              <path id="pipeOuter" d="M60 95 L280 95 C340 95 360 120 450 120 C540 120 560 95 620 95 L840 95 L840 285 L620 285 C560 285 540 260 450 260 C360 260 340 285 280 285 L60 285 Z"
+                fill="url(#pipeGrad)" stroke="rgba(255,255,255,0.25)" stroke-width="4"/>
+
+              <path id="waterPath" d="M65 120 L280 120 C340 120 360 150 450 150 C540 150 560 120 620 120 L835 120 L835 260 L620 260 C560 260 540 230 450 230 C360 230 340 260 280 260 L65 260 Z"
+                fill="url(#waterGrad)" opacity="0.92"/>
+
+              <g id="particles"></g>
+
+              <line x1="170" y1="55" x2="170" y2="325" stroke="#93c5fd" stroke-dasharray="8 8"/>
+              <line x1="730" y1="55" x2="730" y2="325" stroke="#93c5fd" stroke-dasharray="8 8"/>
+
+              <text x="120" y="45" fill="#e2e8f0" font-size="24" font-weight="bold">Penampang 1</text>
+              <text x="680" y="45" fill="#e2e8f0" font-size="24" font-weight="bold">Penampang 2</text>
+
+              <line x1="95" y1="190" x2="255" y2="190" stroke="#fde68a" stroke-width="5" marker-end="url(#arrow)"/>
+              <line x1="645" y1="190" x2="805" y2="190" stroke="#fde68a" stroke-width="5" marker-end="url(#arrow)"/>
+
+              <text id="vText1" x="110" y="175" fill="#fef08a" font-size="22" font-weight="bold">v₁ = 2 m/s</text>
+              <text id="vText2" x="650" y="175" fill="#fef08a" font-size="22" font-weight="bold">v₂ = 4 m/s</text>
+
+              <text id="aText1" x="110" y="350" fill="#bfdbfe" font-size="21" font-weight="bold">A₁ = 8 cm²</text>
+              <text id="aText2" x="650" y="350" fill="#bfdbfe" font-size="21" font-weight="bold">A₂ = 4 cm²</text>
+            </svg>
+            <div class="caption">
+              Semakin sempit penampang, semakin besar kecepatan aliran untuk mempertahankan debit.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="penerapan" class="applications">
+      <h2>4. Penerapan dalam Kehidupan Sehari-hari</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Selang air</h3>
+          <p>
+            Saat ujung selang ditekan menjadi lebih sempit, air menyembur lebih cepat. Ini adalah contoh langsung
+            dari persamaan kontinuitas.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Semprotan parfum</h3>
+          <p>
+            Fluida dan udara bergerak melalui saluran sempit sehingga kecepatannya meningkat. Prinsip ini membantu
+            cairan keluar sebagai butiran halus.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Pembuluh darah</h3>
+          <p>
+            Jika pembuluh menyempit, darah harus mengalir lebih cepat pada bagian tersebut. Karena itu konsep kontinuitas
+            juga penting dalam biologi dan kesehatan.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Pipa rumah tangga</h3>
+          <p>
+            Pada sambungan pipa yang berbeda diameter, laju aliran dapat berubah sesuai luas penampang masing-masing.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Nozel pemadam</h3>
+          <p>
+            Ujung nozel dibuat lebih kecil agar air keluar lebih cepat dan mampu menjangkau jarak yang lebih jauh.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Venturimeter</h3>
+          <p>
+            Alat ini memanfaatkan perubahan penampang untuk mengukur kecepatan dan debit fluida dalam pipa.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gambar">
+      <h2>5. Gambar dan Ilustrasi Tambahan</h2>
+      <p>
+        Berikut ilustrasi sederhana untuk membantu memahami konsep kontinuitas dalam berbagai konteks.
+      </p>
+      <div class="gallery">
+        <div class="gallery-item">
+          <svg viewBox="0 0 300 210">
+            <rect x="20" y="80" width="110" height="50" rx="10" fill="#475569"/>
+            <rect x="130" y="92" width="120" height="26" rx="8" fill="#64748b"/>
+            <rect x="20" y="92" width="230" height="26" rx="8" fill="#38bdf8" opacity="0.9"/>
+            <line x1="50" y1="60" x2="50" y2="150" stroke="#fde68a" stroke-width="3"/>
+            <line x1="230" y1="70" x2="230" y2="140" stroke="#fde68a" stroke-width="3"/>
+            <text x="30" y="45" fill="white" font-size="18">A besar</text>
+            <text x="195" y="45" fill="white" font-size="18">A kecil</text>
+            <text x="50" y="180" fill="#bae6fd" font-size="16">v kecil</text>
+            <text x="210" y="180" fill="#bae6fd" font-size="16">v besar</text>
+          </svg>
+          <div class="text">
+            <strong>Pipa menyempit</strong>
+            <p>Ketika luas penampang mengecil, kecepatan fluida meningkat.</p>
+          </div>
+        </div>
+
+        <div class="gallery-item">
+          <svg viewBox="0 0 300 210">
+            <rect x="35" y="85" width="170" height="40" rx="16" fill="#38bdf8" opacity="0.95"/>
+            <rect x="205" y="95" width="55" height="20" rx="8" fill="#38bdf8"/>
+            <circle cx="35" cy="105" r="6" fill="#e0f2fe"/>
+            <circle cx="65" cy="105" r="6" fill="#e0f2fe"/>
+            <circle cx="95" cy="105" r="6" fill="#e0f2fe"/>
+            <circle cx="125" cy="105" r="6" fill="#e0f2fe"/>
+            <circle cx="155" cy="105" r="6" fill="#e0f2fe"/>
+            <circle cx="210" cy="105" r="4" fill="#e0f2fe"/>
+            <circle cx="225" cy="105" r="4" fill="#e0f2fe"/>
+            <circle cx="240" cy="105" r="4" fill="#e0f2fe"/>
+            <text x="52" y="60" fill="white" font-size="18">Selang air</text>
+            <text x="158" y="155" fill="#fde68a" font-size="16">ujung sempit → cepat</text>
+          </svg>
+          <div class="text">
+            <strong>Selang air</strong>
+            <p>Air keluar lebih cepat saat ujung selang dipersempit.</p>
+          </div>
+        </div>
+
+        <div class="gallery-item">
+          <svg viewBox="0 0 300 210">
+            <path d="M50 105 C95 55, 205 55, 250 105" fill="none" stroke="#f87171" stroke-width="28" stroke-linecap="round"/>
+            <path d="M70 105 C105 78, 195 78, 230 105" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round"/>
+            <line x1="95" y1="145" x2="150" y2="145" stroke="#fde68a" stroke-width="4" marker-end="url(#arrow2)"/>
+            <defs>
+              <marker id="arrow2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                <path d="M0,0 L12,6 L0,12 z" fill="#fde68a"></path>
+              </marker>
+            </defs>
+            <text x="72" y="45" fill="white" font-size="18">Pembuluh darah</text>
+            <text x="85" y="180" fill="#fecaca" font-size="16">Bagian sempit → laju naik</text>
+          </svg>
+          <div class="text">
+            <strong>Pembuluh darah</strong>
+            <p>Penyempitan pembuluh menyebabkan aliran di bagian itu menjadi lebih cepat.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="latihan">
+      <h2>6. Latihan Pemahaman</h2>
+      <div class="quiz-box">
+        <p>
+          Sebuah pipa memiliki luas penampang <strong>12 cm²</strong> dan kecepatan air <strong>3 m/s</strong>.
+          Jika pipa mengecil menjadi <strong>4 cm²</strong>, berapa kecepatan air pada penampang kecil?
+        </p>
+        <button onclick="showAnswer()">Tampilkan Jawaban</button>
+        <div class="answer" id="answerBox">
+          Menggunakan persamaan kontinuitas: <strong>A₁v₁ = A₂v₂</strong><br><br>
+          12 × 3 = 4 × v₂<br>
+          36 = 4v₂<br>
+          v₂ = 9 m/s<br><br>
+          <strong>Jawaban: 9 m/s</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Dibuat untuk pembelajaran fisika interaktif • Persamaan Kontinuitas Fluida Dinamis
+  </footer>
+
+  <script>
+    const a1 = document.getElementById('a1');
+    const a2 = document.getElementById('a2');
+    const v1 = document.getElementById('v1');
+
+    const a1Label = document.getElementById('a1Label');
+    const a2Label = document.getElementById('a2Label');
+    const v1Label = document.getElementById('v1Label');
+    const v2Out = document.getElementById('v2Out');
+    const qOut = document.getElementById('qOut');
+    const conditionOut = document.getElementById('conditionOut');
+    const vText1 = document.getElementById('vText1');
+    const vText2 = document.getElementById('vText2');
+    const aText1 = document.getElementById('aText1');
+    const aText2 = document.getElementById('aText2');
+    const waterPath = document.getElementById('waterPath');
+    const particles = document.getElementById('particles');
+
+    let particleOffset = 0;
+
+    function createParticles(speedFactor) {
+      particles.innerHTML = '';
+      const count = 18;
+      for (let i = 0; i < count; i++) {
+        const x = 85 + ((i * 42 + particleOffset * speedFactor) % 700);
+        const y = 190 + Math.sin((x + particleOffset * 4) / 50) * 26;
+        const r = 4 + (speedFactor * 0.25);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', r.toFixed(2));
+        circle.setAttribute('fill', '#e0f2fe');
+        circle.setAttribute('opacity', '0.9');
+        circle.setAttribute('filter', 'url(#glow)');
+        particles.appendChild(circle);
+      }
+    }
+
+    function updateSimulation() {
+      const A1 = parseFloat(a1.value);
+      const A2 = parseFloat(a2.value);
+      const V1 = parseFloat(v1.value);
+      const V2 = (A1 * V1) / A2;
+      const Q = A1 * V1;
+
+      a1Label.textContent = A1;
+      a2Label.textContent = A2;
+      v1Label.textContent = V1;
+      v2Out.textContent = V2.toFixed(2) + ' m/s';
+      qOut.textContent = Q.toFixed(2);
+
+      let condition = 'Tetap';
+      if (V2 > V1) condition = 'Lebih cepat';
+      else if (V2 < V1) condition = 'Lebih lambat';
+      conditionOut.textContent = condition;
+
+      vText1.textContent = `v₁ = ${V1.toFixed(1)} m/s`;
+      vText2.textContent = `v₂ = ${V2.toFixed(2)} m/s`;
+      aText1.textContent = `A₁ = ${A1} cm²`;
+      aText2.textContent = `A₂ = ${A2} cm²`;
+
+      const topMid = 120 + (20 - A2) * 3.5;
+      const bottomMid = 260 - (20 - A2) * 3.5;
+      waterPath.setAttribute(
+        'd',
+        `M65 120 L280 120 C340 120 360 ${topMid} 450 ${topMid} C540 ${topMid} 560 120 620 120 L835 120 L835 260 L620 260 C560 260 540 ${bottomMid} 450 ${bottomMid} C360 ${bottomMid} 340 260 280 260 L65 260 Z`
+      );
+
+      createParticles(Math.min(Math.max(V2, 1), 12));
+    }
+
+    function animate() {
+      particleOffset += 1.5;
+      const speedFactor = Math.min(Math.max((parseFloat(a1.value) * parseFloat(v1.value)) / parseFloat(a2.value), 1), 12);
+      createParticles(speedFactor);
+      requestAnimationFrame(animate);
+    }
+
+    [a1, a2, v1].forEach(input => input.addEventListener('input', updateSimulation));
+
+    function showAnswer() {
+      document.getElementById('answerBox').style.display = 'block';
+    }
+
+    updateSimulation();
+    animate();
+  </script>
+</body>
+</html>
