@@ -362,8 +362,121 @@
       font-size: 0.92rem;
     }
 
+    /* ================= TAMBAHAN SIMULASI DEBIT AIR ================= */
+    .debit-extra-wrap{
+      margin-top: 24px;
+      padding: 22px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(56,189,248,0.05));
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .debit-extra-title{
+      margin-top: 0;
+      color: #f8fafc;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .debit-extra-grid{
+      display:grid;
+      grid-template-columns:320px 1fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    .debit-extra-controls{
+      display:grid;
+      gap:16px;
+    }
+
+    .debit-extra-control-box{
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .debit-extra-control-box label{
+      display:block;
+      font-weight:600;
+      margin-bottom:8px;
+      color:#e2e8f0;
+    }
+
+    .debit-extra-readout{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .debit-extra-mini-card{
+      background:linear-gradient(135deg, rgba(56,189,248,0.10), rgba(251,113,133,0.08));
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px;
+      padding:14px;
+      text-align:center;
+    }
+
+    .debit-extra-mini-card .title{
+      font-size:0.92rem;
+      color:var(--muted);
+    }
+
+    .debit-extra-mini-card .value{
+      font-size:1.2rem;
+      font-weight:700;
+      color:#c4b5fd;
+      margin-top:6px;
+    }
+
+    .debit-extra-legend{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .debit-extra-legend-item{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      padding:10px;
+      font-size:0.92rem;
+      text-align:center;
+      color:#cbd5e1;
+    }
+
+    .debit-extra-canvas{
+      width:100%;
+      max-width:100%;
+      display:block;
+      margin:auto;
+      background:linear-gradient(180deg, #eefcff 0%, #dff7fa 100%);
+      border-radius:18px;
+      border:1px solid rgba(0,0,0,0.07);
+    }
+
+    .debit-extra-note{
+      margin-top:14px;
+      padding:14px;
+      border-radius:14px;
+      background:rgba(255,114,98,0.08);
+      border:1px solid rgba(255,114,98,0.14);
+      line-height:1.7;
+      color:#e2e8f0;
+    }
+
     @media (max-width: 900px) {
       .sim-grid { grid-template-columns: 1fr; }
+      .debit-extra-grid { grid-template-columns: 1fr; }
+      .debit-extra-readout { grid-template-columns: 1fr 1fr; }
+      .debit-extra-legend { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .debit-extra-readout { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -634,6 +747,74 @@
             </div>
           </div>
         </div>
+
+        <!-- TAMBAHAN SIMULASI DEBIT AIR -->
+        <div class="debit-extra-wrap">
+          <h3 class="debit-extra-title">Simulasi Konsep Debit Air</h3>
+          <p class="caption" style="margin-top:0;">
+            Simulasi tambahan ini menunjukkan hubungan antara <strong>luas penampang (A)</strong>,
+            <strong>kecepatan aliran (v)</strong>, dan <strong>debit air (Q)</strong> berdasarkan rumus
+            <strong>Q = A × v</strong>.
+          </p>
+
+          <div class="debit-extra-grid">
+            <div>
+              <div class="debit-extra-controls">
+                <div class="debit-extra-control-box">
+                  <label for="area">
+                    Luas Penampang (A): <span id="areaVal">0.05</span> m²
+                  </label>
+                  <input type="range" id="area" min="0.01" max="0.10" step="0.01" value="0.05" />
+                </div>
+
+                <div class="debit-extra-control-box">
+                  <label for="velocity">
+                    Kecepatan Aliran (v): <span id="velocityVal">2.0</span> m/s
+                  </label>
+                  <input type="range" id="velocity" min="0.5" max="5.0" step="0.1" value="2.0" />
+                </div>
+              </div>
+
+              <div class="debit-extra-readout">
+                <div class="debit-extra-mini-card">
+                  <div class="title">Debit Air (Q)</div>
+                  <div class="value"><span id="debitValue">0.10</span> m³/s</div>
+                </div>
+
+                <div class="debit-extra-mini-card">
+                  <div class="title">Kategori Aliran</div>
+                  <div class="value" id="flowType">Sedang</div>
+                </div>
+
+                <div class="debit-extra-mini-card">
+                  <div class="title">Visual Tinggi Aliran</div>
+                  <div class="value" id="streamHeight">50%</div>
+                </div>
+
+                <div class="debit-extra-mini-card">
+                  <div class="title">Visual Laju Partikel</div>
+                  <div class="value" id="particleSpeed">2.0x</div>
+                </div>
+              </div>
+
+              <div class="debit-extra-legend">
+                <div class="debit-extra-legend-item">Semakin besar <strong>A</strong>, aliran tampak makin tebal</div>
+                <div class="debit-extra-legend-item">Semakin besar <strong>v</strong>, partikel bergerak makin cepat</div>
+                <div class="debit-extra-legend-item">Semakin besar <strong>Q</strong>, aliran tampak makin rapat</div>
+              </div>
+            </div>
+
+            <div>
+              <canvas id="flowCanvas" class="debit-extra-canvas" width="720" height="320"></canvas>
+              <div class="debit-extra-note">
+                <strong>Catatan:</strong> simulasi ini bersifat edukatif. Visual air dibuat lebih realistis
+                dengan pipa, partikel aliran, gelombang kecil, dan perubahan ketebalan arus sesuai nilai
+                luas penampang serta debit.
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END TAMBAHAN -->
       </div>
     </section>
 
@@ -940,6 +1121,265 @@
 
     updateSimulation();
     animate();
+
+    /* ================= TAMBAHAN SCRIPT SIMULASI DEBIT AIR ================= */
+    const areaSlider = document.getElementById("area");
+    const velocitySlider = document.getElementById("velocity");
+
+    const areaVal = document.getElementById("areaVal");
+    const velocityVal = document.getElementById("velocityVal");
+    const debitValue = document.getElementById("debitValue");
+    const flowTypeValue = document.getElementById("flowType");
+    const streamHeight = document.getElementById("streamHeight");
+    const particleSpeedText = document.getElementById("particleSpeed");
+
+    const flowCanvas = document.getElementById("flowCanvas");
+    const flowCtx = flowCanvas.getContext("2d");
+
+    let flowParticles = [];
+    let flowPhase = 0;
+
+    function getCurrentFlowValues() {
+      const A = parseFloat(areaSlider.value);
+      const v = parseFloat(velocitySlider.value);
+      const Q = A * v;
+      return { A, v, Q };
+    }
+
+    function updateFlowValues() {
+      const { A, v, Q } = getCurrentFlowValues();
+
+      areaVal.textContent = A.toFixed(2);
+      velocityVal.textContent = v.toFixed(1);
+      debitValue.textContent = Q.toFixed(2);
+
+      const heightPercent = Math.round(((A - 0.01) / (0.10 - 0.01)) * 100);
+      streamHeight.textContent = heightPercent + "%";
+      particleSpeedText.textContent = v.toFixed(1) + "x";
+
+      if (Q < 0.10) {
+        flowTypeValue.textContent = "Lambat";
+      } else if (Q < 0.25) {
+        flowTypeValue.textContent = "Sedang";
+      } else {
+        flowTypeValue.textContent = "Deras";
+      }
+    }
+
+    function createFlowParticles() {
+      flowParticles = [];
+      const { A, v, Q } = getCurrentFlowValues();
+
+      const streamThickness = mapFlow(A, 0.01, 0.10, 40, 140);
+      const centerY = flowCanvas.height / 2;
+      const topY = centerY - streamThickness / 2;
+      const bottomY = centerY + streamThickness / 2;
+
+      const count = Math.floor(mapFlow(Q, 0.005, 0.50, 25, 140));
+
+      for (let i = 0; i < count; i++) {
+        flowParticles.push({
+          x: Math.random() * flowCanvas.width,
+          y: randomFlow(topY + 6, bottomY - 6),
+          radius: randomFlow(1.5, 3.8),
+          speed: mapFlow(v, 0.5, 5.0, 1.5, 10) + randomFlow(-0.3, 0.3),
+          alpha: randomFlow(0.45, 0.95)
+        });
+      }
+    }
+
+    function drawFlowPipe(streamThickness) {
+      const centerY = flowCanvas.height / 2;
+      const pipeHeight = 180;
+      const pipeTop = centerY - pipeHeight / 2;
+
+      flowCtx.fillStyle = "#b8c7d9";
+      roundRectFlow(flowCtx, 40, pipeTop, flowCanvas.width - 80, pipeHeight, 28, true, false);
+
+      flowCtx.fillStyle = "#dce6f2";
+      roundRectFlow(flowCtx, 55, pipeTop + 15, flowCanvas.width - 110, pipeHeight - 30, 22, true, false);
+
+      const waterTop = centerY - streamThickness / 2;
+      flowCtx.fillStyle = "#00C4CC";
+      roundRectFlow(flowCtx, 55, waterTop, flowCanvas.width - 110, streamThickness, 20, true, false);
+
+      flowCtx.fillStyle = "rgba(255,255,255,0.25)";
+      roundRectFlow(flowCtx, 65, waterTop + 8, flowCanvas.width - 220, Math.max(6, streamThickness * 0.12), 10, true, false);
+
+      flowCtx.strokeStyle = "rgba(255,255,255,0.9)";
+      flowCtx.lineWidth = 2;
+      flowCtx.beginPath();
+      flowCtx.moveTo(70, waterTop);
+      flowCtx.lineTo(flowCanvas.width - 70, waterTop);
+      flowCtx.stroke();
+
+      flowCtx.beginPath();
+      flowCtx.moveTo(70, waterTop + streamThickness);
+      flowCtx.lineTo(flowCanvas.width - 70, waterTop + streamThickness);
+      flowCtx.stroke();
+    }
+
+    function drawFlowDirectionCanvas() {
+      flowCtx.strokeStyle = "#FF7262";
+      flowCtx.fillStyle = "#FF7262";
+      flowCtx.lineWidth = 4;
+
+      for (let i = 0; i < 3; i++) {
+        const startX = 140 + i * 170;
+        const y = 55;
+        drawArrowFlow(startX, y, startX + 90, y);
+      }
+
+      flowCtx.fillStyle = "#2C2C2C";
+      flowCtx.font = "bold 16px Arial";
+      flowCtx.fillText("Arah Aliran Fluida", 275, 38);
+    }
+
+    function drawFlowParticles(streamThickness) {
+      const centerY = flowCanvas.height / 2;
+      const topY = centerY - streamThickness / 2;
+      const bottomY = centerY + streamThickness / 2;
+
+      for (const p of flowParticles) {
+        p.x += p.speed;
+
+        if (p.x > flowCanvas.width - 52) {
+          p.x = 58;
+          p.y = randomFlow(topY + 6, bottomY - 6);
+        }
+
+        const waveY = Math.sin((p.x + flowPhase) * 0.03) * 1.4;
+
+        flowCtx.beginPath();
+        flowCtx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+        flowCtx.arc(p.x, p.y + waveY, p.radius, 0, Math.PI * 2);
+        flowCtx.fill();
+      }
+    }
+
+    function drawFlowScale(streamThickness, A, v, Q) {
+      const centerY = flowCanvas.height / 2;
+      const waterTop = centerY - streamThickness / 2;
+      const waterBottom = centerY + streamThickness / 2;
+
+      flowCtx.fillStyle = "#2C2C2C";
+      flowCtx.font = "bold 15px Arial";
+      flowCtx.fillText(`A = ${A.toFixed(2)} m²`, 65, waterTop - 18);
+      flowCtx.fillText(`v = ${v.toFixed(1)} m/s`, 65, waterBottom + 28);
+      flowCtx.fillText(`Q = ${Q.toFixed(2)} m³/s`, flowCanvas.width - 195, waterBottom + 28);
+
+      flowCtx.strokeStyle = "#7D2AE8";
+      flowCtx.lineWidth = 3;
+      flowCtx.beginPath();
+      flowCtx.moveTo(flowCanvas.width - 60, waterTop);
+      flowCtx.lineTo(flowCanvas.width - 60, waterBottom);
+      flowCtx.stroke();
+
+      flowCtx.beginPath();
+      flowCtx.moveTo(flowCanvas.width - 68, waterTop);
+      flowCtx.lineTo(flowCanvas.width - 52, waterTop);
+      flowCtx.moveTo(flowCanvas.width - 68, waterBottom);
+      flowCtx.lineTo(flowCanvas.width - 52, waterBottom);
+      flowCtx.stroke();
+
+      flowCtx.fillStyle = "#7D2AE8";
+      flowCtx.font = "bold 13px Arial";
+      flowCtx.fillText("tinggi aliran", flowCanvas.width - 110, waterTop - 10);
+    }
+
+    function drawFlowBackgroundDetails() {
+      for (let i = 0; i < 12; i++) {
+        const x = 30 + i * 58;
+        const y = 270 + Math.sin((flowPhase + i * 20) * 0.04) * 4;
+        flowCtx.beginPath();
+        flowCtx.fillStyle = "rgba(0,196,204,0.10)";
+        flowCtx.arc(x, y, 8 + (i % 3), 0, Math.PI * 2);
+        flowCtx.fill();
+      }
+    }
+
+    function drawFlowScene() {
+      const { A, v, Q } = getCurrentFlowValues();
+
+      flowCtx.clearRect(0, 0, flowCanvas.width, flowCanvas.height);
+
+      const streamThickness = mapFlow(A, 0.01, 0.10, 40, 140);
+
+      drawFlowBackgroundDetails();
+      drawFlowPipe(streamThickness);
+      drawFlowParticles(streamThickness);
+      drawFlowDirectionCanvas();
+      drawFlowScale(streamThickness, A, v, Q);
+
+      flowPhase += 2;
+      requestAnimationFrame(drawFlowScene);
+    }
+
+    function drawArrowFlow(x1, y1, x2, y2) {
+      const headLength = 10;
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+
+      flowCtx.beginPath();
+      flowCtx.moveTo(x1, y1);
+      flowCtx.lineTo(x2, y2);
+      flowCtx.stroke();
+
+      flowCtx.beginPath();
+      flowCtx.moveTo(x2, y2);
+      flowCtx.lineTo(
+        x2 - headLength * Math.cos(angle - Math.PI / 6),
+        y2 - headLength * Math.sin(angle - Math.PI / 6)
+      );
+      flowCtx.lineTo(
+        x2 - headLength * Math.cos(angle + Math.PI / 6),
+        y2 - headLength * Math.sin(angle + Math.PI / 6)
+      );
+      flowCtx.closePath();
+      flowCtx.fill();
+    }
+
+    function roundRectFlow(ctx, x, y, width, height, radius, fill, stroke) {
+      if (typeof radius === "number") {
+        radius = { tl: radius, tr: radius, br: radius, bl: radius };
+      } else {
+        radius = { tl: 0, tr: 0, br: 0, bl: 0, ...radius };
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(x + radius.tl, y);
+      ctx.lineTo(x + width - radius.tr, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+      ctx.lineTo(x + width, y + height - radius.br);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+      ctx.lineTo(x + radius.bl, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+      ctx.lineTo(x, y + radius.tl);
+      ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+      ctx.closePath();
+
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function mapFlow(value, inMin, inMax, outMin, outMax) {
+      return outMin + ((value - inMin) * (outMax - outMin)) / (inMax - inMin);
+    }
+
+    function randomFlow(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function handleFlowInput() {
+      updateFlowValues();
+      createFlowParticles();
+    }
+
+    areaSlider.addEventListener("input", handleFlowInput);
+    velocitySlider.addEventListener("input", handleFlowInput);
+
+    updateFlowValues();
+    createFlowParticles();
+    drawFlowScene();
   </script>
 </body>
 </html>
